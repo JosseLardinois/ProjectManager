@@ -15,6 +15,11 @@ namespace ProjectManager.Services
             _projectRepository = projectRepository;
         }
 
+        public async Task<ProjectDTO> GetProjectAsync(int projectId)
+        {
+            return await _projectRepository.GetProjectAsync(projectId);
+        }
+
         public async Task<int> CreateProjectAsync(ProjectDTO projectDto)
         {
             if (projectDto == null)
