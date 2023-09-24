@@ -1,0 +1,59 @@
+﻿using Dapper;
+using MySql.Data.MySqlClient;
+using ProjectManager.Models;
+using System;
+using System.Data;
+using System.Threading.Tasks;
+
+namespace ProjectManager.DAL
+{
+    public class ProjectRepository
+    {
+        private readonly string _connectionString;
+
+        public ProjectRepository()
+        {
+            // You should keep your connection strings secure and not hard-coded in real-world applications.
+            _connectionString = "Server=localhost;Database=projectmanagement;User ID=root;Password=password;";
+        }
+
+        private IDbConnection CreateConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+
+        public async Task<int> CreateProjectAsync(Project project)
+        {
+            using (var dbConnection = CreateConnection())
+            {
+                const string query = @"INSERT INTO Project (Name, Created_At, Owners, PhaseID) 
+                                       VALUES (@Name, @created_At, @Owners, @PhaseID);
+                                       SELECT LAST_INSERT_ID();";
+                Console.WriteLine(project.Name);
+                return await dbConnection.ExecuteScalarAsync<int>(query, project);
+            }
+        }
+
+        public async Task UpdateProjectAsync(Project project)
+        {
+            using (var dbConnection = CreateConnection())
+            {
+                const string query = @"UPDATE Project 
+                                       SET Name = @Name, Created_At = @created_At, Owners = @Owners, PhaseID = @PhaseID 
+                                       WHERE ProjectID = @ProjectID;";
+
+                await dbConnection.ExecuteAsync(query, project);
+            }
+        }
+
+        public async Task DeleteProjectAsync(int projectId)
+        {
+            using (var dbConnection = CreateConnection())
+            {
+                const string query = @"DELETE FROM Project WHERE ProjectID = @ProjectID;";
+
+                await dbConnection.ExecuteAsync(query, new { ProjectID = projectId });
+            }
+        }
+    }
+}
