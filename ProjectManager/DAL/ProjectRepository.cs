@@ -23,19 +23,20 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connectionString);
         }
 
-        public async Task<ProjectDTO> GetProjectAsync(int projectId)
+        public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
         {
             const string query = @"SELECT * FROM Project WHERE ProjectID = @ProjectID;";
             using var dbConnection = CreateConnection();
-            return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { ProjectID = projectId });
+            return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id = projectId });
         }
 
         public async Task<int> CreateProjectAsync(Project project)
         {
+            project.Id = Guid.NewGuid();
             using (var dbConnection = CreateConnection())
             {
-                const string query = @"INSERT INTO Project (Name, Created_At, Owners, PhaseID) 
-                                       VALUES (@Name, @created_At, @Owners, @PhaseID);
+                const string query = @"INSERT INTO Project (Id, Name, Created_At, PhaseID) 
+                                       VALUES (@Id, @Name, @created_At, @PhaseID);
                                        SELECT LAST_INSERT_ID();";
                 return await dbConnection.ExecuteScalarAsync<int>(query, project);
             }
@@ -43,15 +44,15 @@ namespace ProjectManager.DAL
 
         public async Task<bool> UpdateProjectAsync(Project project)
         {
-            const string query = @"UPDATE Project SET Name = @Name, Created_At = @created_At, Owners = @Owners, PhaseID = @PhaseID WHERE ProjectID = @ProjectID;";
+            const string query = @"UPDATE Project SET Name = @Name, PhaseID = @PhaseID WHERE Id = @Id;";
             var affectedRows = await CreateConnection().ExecuteAsync(query, project);
             return affectedRows > 0;
         }
 
-        public async Task<bool> DeleteProjectAsync(int projectId)
+        public async Task<bool> DeleteProjectAsync(Guid projectId)
         {
             const string query = @"DELETE FROM Project WHERE ProjectID = @ProjectID;";
-            var affectedRows = await CreateConnection().ExecuteAsync(query, new { ProjectID = projectId });
+            var affectedRows = await CreateConnection().ExecuteAsync(query, new { Id = projectId });
             return affectedRows > 0;
         }
     }
