@@ -33,6 +33,8 @@ namespace ProjectManager.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateProject(ProjectDTO project)
         {
+            await _projectService.CreateProjectAsync(project);
+            return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             try
             {
                 await _projectService.CreateProjectAsync(project);
