@@ -8,7 +8,7 @@ namespace ProjectManager.DAL
     {
         Task<ProjectDTO> GetProjectAsync(int projectId);
         Task<int> CreateProjectAsync(Project project);
-        Task UpdateProjectAsync(Project project);
-        Task DeleteProjectAsync(int projectId);
+        Task<bool> UpdateProjectAsync(Project project);
+        Task<bool> DeleteProjectAsync(int projectId);
     }
 }

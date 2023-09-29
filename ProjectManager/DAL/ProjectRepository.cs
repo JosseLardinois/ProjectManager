@@ -41,26 +41,18 @@ namespace ProjectManager.DAL
             }
         }
 
-        public async Task UpdateProjectAsync(Project project)
+        public async Task<bool> UpdateProjectAsync(Project project)
         {
-            using (var dbConnection = CreateConnection())
-            {
-                const string query = @"UPDATE Project 
-                                       SET Name = @Name, Created_At = @created_At, Owners = @Owners, PhaseID = @PhaseID 
-                                       WHERE ProjectID = @ProjectID;";
-
-                await dbConnection.ExecuteAsync(query, project);
-            }
+            const string query = @"UPDATE Project SET Name = @Name, Created_At = @created_At, Owners = @Owners, PhaseID = @PhaseID WHERE ProjectID = @ProjectID;";
+            var affectedRows = await CreateConnection().ExecuteAsync(query, project);
+            return affectedRows > 0;
         }
 
-        public async Task DeleteProjectAsync(int projectId)
+        public async Task<bool> DeleteProjectAsync(int projectId)
         {
-            using (var dbConnection = CreateConnection())
-            {
-                const string query = @"DELETE FROM Project WHERE ProjectID = @ProjectID;";
-
-                await dbConnection.ExecuteAsync(query, new { ProjectID = projectId });
-            }
+            const string query = @"DELETE FROM Project WHERE ProjectID = @ProjectID;";
+            var affectedRows = await CreateConnection().ExecuteAsync(query, new { ProjectID = projectId });
+            return affectedRows > 0;
         }
     }
 }

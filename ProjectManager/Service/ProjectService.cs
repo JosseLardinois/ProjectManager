@@ -38,7 +38,7 @@ namespace ProjectManager.Services
             return await _projectRepository.CreateProjectAsync(project);
         }
 
-        public async Task UpdateProjectAsync(ProjectDTO projectDto)
+        public async Task<bool> UpdateProjectAsync(ProjectDTO projectDto)
         {
             if (projectDto == null)
                 throw new ArgumentNullException(nameof(projectDto));
@@ -53,15 +53,15 @@ namespace ProjectManager.Services
                 PhaseID = projectDto.PhaseID
             };
 
-            await _projectRepository.UpdateProjectAsync(project);
+            return await _projectRepository.UpdateProjectAsync(project);
         }
 
-        public async Task DeleteProjectAsync(int projectId)
+        public async Task<bool> DeleteProjectAsync(int projectId)
         {
             if (projectId <= 0)
                 throw new ArgumentException("Project ID must be greater than 0", nameof(projectId));
 
-            await _projectRepository.DeleteProjectAsync(projectId);
+            return await _projectRepository.DeleteProjectAsync(projectId);
         }
     }
 }
