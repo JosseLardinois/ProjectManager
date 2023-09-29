@@ -8,7 +8,7 @@ namespace ProjectManager.Services
     {
         Task<ProjectDTO> GetProjectAsync(int projectId);
         Task<int> CreateProjectAsync(ProjectDTO projectDto);
-        Task UpdateProjectAsync(ProjectDTO projectDto);
-        Task DeleteProjectAsync(int projectId);
+        Task<bool> UpdateProjectAsync(ProjectDTO projectDto);
+        Task<bool> DeleteProjectAsync(int projectId); 
     }
 }
