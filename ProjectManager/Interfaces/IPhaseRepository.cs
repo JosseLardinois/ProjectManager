@@ -2,6 +2,6 @@
 {
     public interface IPhaseRepository
     {
-        Task CreatePhasesAsync(Guid projectId);
+        Task<bool> CreatePhasesAsync(Guid projectId);
     }
 }

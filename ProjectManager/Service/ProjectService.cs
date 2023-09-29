@@ -10,12 +10,13 @@ namespace ProjectManager.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
-        private readonly IPhaseRepository _phaseRepository;
+        private readonly IPhaseService _phaseService;
+        private readonly IArtefactRepository _artefactRepository;
 
-        public ProjectService(IProjectRepository projectRepository, IPhaseRepository phaseRepository)
+        public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService)
         {
             _projectRepository = projectRepository;
-            _phaseRepository = phaseRepository;
+            _phaseService = phaseService;
         }
 
         public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
@@ -38,7 +39,7 @@ namespace ProjectManager.Services
             };
 
             var createproject = await _projectRepository.CreateProjectAsync(project);
-            await _phaseRepository.CreatePhasesAsync(project.Id);
+            await _phaseService.CreatePhases(project.Id);
             return createproject;
         }
 
