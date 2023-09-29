@@ -37,7 +37,6 @@ namespace ProjectManager.DAL
                 const string query = @"INSERT INTO Project (Name, Created_At, Owners, PhaseID) 
                                        VALUES (@Name, @created_At, @Owners, @PhaseID);
                                        SELECT LAST_INSERT_ID();";
-                Console.WriteLine(project.Name);
                 return await dbConnection.ExecuteScalarAsync<int>(query, project);
             }
         }

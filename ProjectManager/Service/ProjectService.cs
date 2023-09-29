@@ -28,7 +28,7 @@ namespace ProjectManager.Services
             // Convert DTO to Model
             var project = new Project
             {
-                // Assume Project and ProjectDto have similar properties
+                ProjectID = projectDto.ProjectID,
                 Name = projectDto.Name,
                 Created_At = projectDto.Created_At,
                 Owners = projectDto.Owners,

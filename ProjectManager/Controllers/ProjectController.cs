@@ -27,6 +27,18 @@ namespace ProjectManager.Controllers
             return Ok(project);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> CreateProject(int id)
+        {
+            var project = await _projectService.GetProjectAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(project);
+        }
+
         [HttpGet("{id}/phases")]
         public async Task<IActionResult> GetPhasesOfProject(int id)
         {
