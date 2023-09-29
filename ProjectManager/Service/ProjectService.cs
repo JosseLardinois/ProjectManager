@@ -1,5 +1,6 @@
 ﻿using ProjectManager.DAL;
 using ProjectManager.DTOs;
+using ProjectManager.Interfaces;
 using ProjectManager.Models;
 using System;
 using System.Threading.Tasks;
@@ -9,10 +10,12 @@ namespace ProjectManager.Services
     public class ProjectService : IProjectService
     {
         private readonly IProjectRepository _projectRepository;
+        private readonly IPhaseRepository _phaseRepository;
 
-        public ProjectService(IProjectRepository projectRepository)
+        public ProjectService(IProjectRepository projectRepository, IPhaseRepository phaseRepository)
         {
             _projectRepository = projectRepository;
+            _phaseRepository = phaseRepository;
         }
 
         public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
@@ -34,7 +37,9 @@ namespace ProjectManager.Services
                 Created_At = projectDto.Created_At,
             };
 
-            return await _projectRepository.CreateProjectAsync(project);
+            var createproject = await _projectRepository.CreateProjectAsync(project);
+            await _phaseRepository.CreatePhasesAsync(project.Id);
+            return createproject;
         }
 
         public async Task<bool> UpdateProjectAsync(ProjectDTO projectDto)
