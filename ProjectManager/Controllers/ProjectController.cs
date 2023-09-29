@@ -1,32 +1,42 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjectManager.Services;
+using System.Threading.Tasks;
 
 namespace ProjectManager.Controllers
 {
     [ApiController]
-    [Route("controller")]
+    [Route("[controller]")]
     public class ProjectController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetProject()
-        {
+        private readonly IProjectService _projectService;
 
-            //make repo, interfaces, etc..
+        public ProjectController(IProjectService projectService)
+        {
+            _projectService = projectService;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProject(int id)
+        {
+            var project = await _projectService.GetProjectAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(project);
+        }
+
+        [HttpGet("{id}/phases")]
+        public async Task<IActionResult> GetPhasesOfProject(int id)
+        {
             return Ok();
         }
 
-        [HttpGet]
-        public IActionResult GetPhaseOfProject()
+        [HttpGet("{id}/tasks")]
+        public async Task<IActionResult> GetTasksOfProject(int id)
         {
 
-            //make repo, interfaces, etc..
-            return Ok();
-        }
-
-        [HttpGet]
-        public IActionResult GetTasksOfProject()
-        {
-
-            //make repo, interfaces, etc..
             return Ok();
         }
     }

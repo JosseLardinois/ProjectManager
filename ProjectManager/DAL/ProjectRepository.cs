@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using ProjectManager.DTOs;
 using ProjectManager.Models;
 using System;
 using System.Data;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.DAL
 {
-    public class ProjectRepository
+    public class ProjectRepository : IProjectRepository
     {
         private readonly string _connectionString;
 
@@ -22,6 +23,13 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connectionString);
         }
 
+        public async Task<ProjectDTO> GetProjectAsync(int projectId)
+        {
+            const string query = @"SELECT * FROM Project WHERE ProjectID = @ProjectID;";
+            using var dbConnection = CreateConnection();
+            return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { ProjectID = projectId });
+        }
+
         public async Task<int> CreateProjectAsync(Project project)
         {
             using (var dbConnection = CreateConnection())
@@ -29,7 +37,6 @@ namespace ProjectManager.DAL
                 const string query = @"INSERT INTO Project (Name, Created_At, Owners, PhaseID) 
                                        VALUES (@Name, @created_At, @Owners, @PhaseID);
                                        SELECT LAST_INSERT_ID();";
-                Console.WriteLine(project.Name);
                 return await dbConnection.ExecuteScalarAsync<int>(query, project);
             }
         }
