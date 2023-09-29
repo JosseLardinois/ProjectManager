@@ -6,9 +6,9 @@ namespace ProjectManager.DAL
 {
     public interface IProjectRepository
     {
-        Task<ProjectDTO> GetProjectAsync(int projectId);
+        Task<ProjectDTO> GetProjectAsync(Guid projectId);
         Task<int> CreateProjectAsync(Project project);
         Task<bool> UpdateProjectAsync(Project project);
-        Task<bool> DeleteProjectAsync(int projectId);
+        Task<bool> DeleteProjectAsync(Guid projectId);
     }
 }

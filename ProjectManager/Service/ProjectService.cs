@@ -15,7 +15,7 @@ namespace ProjectManager.Services
             _projectRepository = projectRepository;
         }
 
-        public async Task<ProjectDTO> GetProjectAsync(int projectId)
+        public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
         {
             return await _projectRepository.GetProjectAsync(projectId);
         }
@@ -28,10 +28,9 @@ namespace ProjectManager.Services
             // Convert DTO to Model
             var project = new Project
             {
-                ProjectID = projectDto.ProjectID,
+                Id = projectDto.Id,
                 Name = projectDto.Name,
                 Created_At = projectDto.Created_At,
-                Owners = projectDto.Owners,
                 PhaseID = projectDto.PhaseID
             };
 
@@ -46,19 +45,17 @@ namespace ProjectManager.Services
             // Convert DTO to Model
             var project = new Project
             {
-                ProjectID = projectDto.ProjectID,
+                Id = projectDto.Id,
                 Name = projectDto.Name,
-                Created_At = projectDto.Created_At,
-                Owners = projectDto.Owners,
                 PhaseID = projectDto.PhaseID
             };
 
             return await _projectRepository.UpdateProjectAsync(project);
         }
 
-        public async Task<bool> DeleteProjectAsync(int projectId)
+        public async Task<bool> DeleteProjectAsync(Guid projectId)
         {
-            if (projectId <= 0)
+            if (projectId == Guid.Empty)
                 throw new ArgumentException("Project ID must be greater than 0", nameof(projectId));
 
             return await _projectRepository.DeleteProjectAsync(projectId);

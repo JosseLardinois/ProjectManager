@@ -18,7 +18,7 @@ namespace ProjectManager.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProject(int id)
+        public async Task<IActionResult> GetProject(Guid id)
         {
             var project = await _projectService.GetProjectAsync(id);
             if (project == null)
@@ -36,7 +36,7 @@ namespace ProjectManager.Controllers
             try
             {
                 await _projectService.CreateProjectAsync(project);
-                return CreatedAtAction(nameof(GetProject), new { id = project.ProjectID }, project);
+                return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             }
             catch (Exception ex)
             {
@@ -67,7 +67,7 @@ namespace ProjectManager.Controllers
 
         // Delete method with error handling
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProject(int id)
+        public async Task<IActionResult> DeleteProject(Guid id)
         {
             try
             {
