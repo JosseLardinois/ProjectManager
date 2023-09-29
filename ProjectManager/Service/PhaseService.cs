@@ -16,6 +16,12 @@ namespace ProjectManager.Service
             return await _phaseRepository.CreatePhasesAsync(projectId);
             
         }
+        public async Task<IEnumerable<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
+        {
+            var phases = await _phaseRepository.GetAllPhasesAsync(projectId);
+            return phases;
+
+        }
 
     }
 }

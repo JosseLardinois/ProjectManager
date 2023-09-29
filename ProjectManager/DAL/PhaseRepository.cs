@@ -21,8 +21,16 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connetionString);
         }
 
-        public async Task<IEnumerable<Phase>> GetPhasesAsync(Guid projectId)
+        public async Task<IEnumerable<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
         {
+            const string query = @"
+                SELECT * FROM Phase
+                WHERE ProjectID = @ProjectID;
+            ";
+
+            using var connection = CreateConnection();
+            var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectID = projectId });
+            return phases;
         }
         public async Task<bool> CreatePhasesAsync(Guid projectId)
         {
