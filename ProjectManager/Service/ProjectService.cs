@@ -30,8 +30,8 @@ namespace ProjectManager.Services
             {
                 Id = projectDto.Id,
                 Name = projectDto.Name,
+                Finished = projectDto.Finished,
                 Created_At = projectDto.Created_At,
-                PhaseID = projectDto.PhaseID
             };
 
             return await _projectRepository.CreateProjectAsync(project);
@@ -47,7 +47,7 @@ namespace ProjectManager.Services
             {
                 Id = projectDto.Id,
                 Name = projectDto.Name,
-                PhaseID = projectDto.PhaseID
+                Finished = projectDto.Finished
             };
 
             return await _projectRepository.UpdateProjectAsync(project);

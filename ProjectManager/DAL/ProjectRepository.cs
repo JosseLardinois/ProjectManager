@@ -33,10 +33,11 @@ namespace ProjectManager.DAL
         public async Task<int> CreateProjectAsync(Project project)
         {
             project.Id = Guid.NewGuid();
+            project.Created_At = DateTime.Now;
             using (var dbConnection = CreateConnection())
             {
-                const string query = @"INSERT INTO Project (Id, Name, Created_At, PhaseID) 
-                                       VALUES (@Id, @Name, @created_At, @PhaseID);
+                const string query = @"INSERT INTO Project (Id, Name, Created_At) 
+                                       VALUES (@Id, @Name, @created_At);
                                        SELECT LAST_INSERT_ID();";
                 return await dbConnection.ExecuteScalarAsync<int>(query, project);
             }
@@ -44,7 +45,7 @@ namespace ProjectManager.DAL
 
         public async Task<bool> UpdateProjectAsync(Project project)
         {
-            const string query = @"UPDATE Project SET Name = @Name, PhaseID = @PhaseID WHERE Id = @Id;";
+            const string query = @"UPDATE Project SET Name = @Name, Finished = @Finished WHERE Id = @Id;";
             var affectedRows = await CreateConnection().ExecuteAsync(query, project);
             return affectedRows > 0;
         }
