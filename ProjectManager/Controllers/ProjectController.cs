@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjectManager.DTOs;
+using ProjectManager.Interfaces;
 using ProjectManager.Models;
-using ProjectManager.Services;
+using ProjectManager.Service;
 using System.Threading.Tasks;
 
 namespace ProjectManager.Controllers
@@ -11,11 +12,16 @@ namespace ProjectManager.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
+        private readonly IPhaseService _phaseService;
+        private readonly IArtefactService _artefactService;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, IPhaseService phaseService, IArtefactService artefact)
         {
             _projectService = projectService;
+            _phaseService = phaseService;
+            _artefactService = artefact;
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProject(Guid id)
@@ -43,7 +49,7 @@ namespace ProjectManager.Controllers
             catch (Exception ex)
             {
                 // Log the exception (not shown)
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, ex);
             }
         }
 
@@ -63,7 +69,7 @@ namespace ProjectManager.Controllers
             catch (Exception ex)
             {
                 // Log the exception (not shown)
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, ex);
             }
         }
 
@@ -83,20 +89,22 @@ namespace ProjectManager.Controllers
             catch (Exception ex)
             {
                 // Log the exception (not shown)
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, ex);
             }
         }
 
         [HttpGet("{id}/phases")]
-        public async Task<IActionResult> GetPhasesOfProject(int id)
+        public async Task<IActionResult> GetPhasesOfProject(Guid id)
         {
+            
+            var i = await _phaseService.GetAllPhasesAsync(id);
+            Console.WriteLine(i);
             return Ok();
         }
 
         [HttpGet("{id}/tasks")]
         public async Task<IActionResult> GetTasksOfProject(int id)
         {
-
             return Ok();
         }
     }
