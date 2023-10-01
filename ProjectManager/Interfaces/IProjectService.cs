@@ -2,7 +2,7 @@
 using ProjectManager.Models;
 using System.Threading.Tasks;
 
-namespace ProjectManager.Services
+namespace ProjectManager.Service
 {
     public interface IProjectService
     {

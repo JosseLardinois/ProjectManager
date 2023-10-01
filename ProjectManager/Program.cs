@@ -1,5 +1,6 @@
 using ProjectManager.DAL;
-using ProjectManager.Services;
+using ProjectManager.Interfaces;
+using ProjectManager.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
-
+builder.Services.AddScoped<IPhaseRepository, PhaseRepository>();
+builder.Services.AddScoped<IPhaseService, PhaseService>();
+builder.Services.AddScoped<IArtefactRepository, ArtefactRepository>();
+builder.Services.AddScoped<IArtefactService, ArtefactService>();
 
 var app = builder.Build();
 

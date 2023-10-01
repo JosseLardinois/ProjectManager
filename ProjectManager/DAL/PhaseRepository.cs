@@ -23,13 +23,11 @@ namespace ProjectManager.DAL
 
         public async Task<IEnumerable<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
         {
-            const string query = @"
-                SELECT * FROM Phase
-                WHERE ProjectID = @ProjectID;
-            ";
+            const string query = @"SELECT * FROM Phase WHERE ProjectID = @ProjectID;";
 
             using var connection = CreateConnection();
             var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectID = projectId });
+            Console.WriteLine(phases);
             return phases;
         }
         public async Task<bool> CreatePhasesAsync(Guid projectId)

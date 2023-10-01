@@ -2,10 +2,8 @@
 using ProjectManager.DTOs;
 using ProjectManager.Interfaces;
 using ProjectManager.Models;
-using System;
-using System.Threading.Tasks;
 
-namespace ProjectManager.Services
+namespace ProjectManager.Service
 {
     public class ProjectService : IProjectService
     {
