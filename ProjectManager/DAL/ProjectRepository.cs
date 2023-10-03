@@ -23,15 +23,13 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connectionString);
         }
 
-        public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
+        public async Task<ProjectDTO> GetProjectAsync(Guid Id)
         {
             using (var dbConnection = CreateConnection())
-    {
-        const string query = @"SELECT * FROM Project WHERE ProjectID = @ProjectID;";
-        return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id = projectId });
-    }
-
-           
+                {
+                    const string query = @"SELECT * FROM Project WHERE Id = @Id;";
+                    return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id });           
+                }
         }
 
         public async Task<int> CreateProjectAsync(Project project)
@@ -56,7 +54,7 @@ namespace ProjectManager.DAL
 
         public async Task<bool> DeleteProjectAsync(Guid projectId)
         {
-            const string query = @"DELETE FROM Project WHERE ProjectID = @ProjectID;";
+            const string query = @"DELETE FROM Project WHERE ProjectId = @ProjectId;";
             var affectedRows = await CreateConnection().ExecuteAsync(query, new { Id = projectId });
             return affectedRows > 0;
         }

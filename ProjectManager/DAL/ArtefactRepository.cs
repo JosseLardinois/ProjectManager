@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MySql.Data.MySqlClient;
+using ProjectManager.DTO;
 using ProjectManager.Interfaces;
 using ProjectManager.Models;
 using System.Data;
@@ -17,7 +18,30 @@ namespace ProjectManager.DAL
         {
             return new MySqlConnection(_connetionString);
         }
-        //Get the different PhaseID's
+        
+
+        public async Task<IEnumerable<ArtefactDTO>> GetArtefactsFromPhase(Guid phaseId)
+        {
+            const string query = @"SELECT * FROM artefact WHERE PhaseId = @PhaseId;";
+
+            using var connection = CreateConnection();
+            var artefacts = await connection.QueryAsync<ArtefactDTO>(query, new { PhaseId = phaseId });
+
+            // Create a new list of PhaseDTO
+            var artefactDTOList = new List<ArtefactDTO>();
+
+            // Loop through the fetched rows and add them to the list of PhaseDTO
+            foreach (var artefact in artefacts)
+            {
+                artefactDTOList.Add(artefact);
+            }
+
+            return artefactDTOList;
+        }
+
+        
+
+
         public async Task<bool> CreateArtefactsAsync(Guid phaseId)
         {
             var artefacts = new List<Artefact>
@@ -64,8 +88,8 @@ namespace ProjectManager.DAL
             };
 
             const string query = @"
-                INSERT INTO Phase (Id, Name, PhaseID, Artefact_Type) 
-                VALUES (@Id, @Name, @PhaseID, @Artefact_Type);
+                INSERT INTO Phase (Id, Name, PhaseId, Artefact_Type) 
+                VALUES (@Id, @Name, @PhaseId, @Artefact_Type);
             ";
             using var connection = CreateConnection();
             using var transaction = connection.BeginTransaction();
@@ -87,5 +111,7 @@ namespace ProjectManager.DAL
                 return false;
             }
         }
+
+
     }
 }

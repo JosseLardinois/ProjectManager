@@ -23,11 +23,10 @@ namespace ProjectManager.DAL
 
         public async Task<IEnumerable<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
         {
-            const string query = @"SELECT * FROM Phase WHERE ProjectID = @ProjectID;";
+            const string query = @"SELECT * FROM Phase WHERE ProjectId = @ProjectId;";
 
             using var connection = CreateConnection();
-            connection.Open();
-            var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectID = projectId });
+            var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectId = projectId });
 
             // Create a new list of PhaseDTO
             var phaseDTOList = new List<PhaseDTO>();
@@ -43,7 +42,6 @@ namespace ProjectManager.DAL
             {
                 Console.WriteLine(phaseDTO);
             }
-            connection.Close();
             return phaseDTOList;
         }
 
@@ -61,8 +59,8 @@ namespace ProjectManager.DAL
     };
 
             const string query = @"
-        INSERT INTO Phase (Id, Name, ProjectID) 
-        VALUES (@Id, @Name, @ProjectID);
+        INSERT INTO Phase (Id, Name, ProjectId) 
+        VALUES (@Id, @Name, @ProjectId);
     ";
 
             using var connection = CreateConnection();

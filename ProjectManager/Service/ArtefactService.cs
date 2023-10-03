@@ -12,14 +12,15 @@ namespace ProjectManager.Service
             _artefactRepository = artefactRepository;
             _phaseService = phaseService;
         }
-
-        public async Task CreateArtefacts(Guid phaseId)
+        public async Task<IEnumerable<ArtefactDTO>> GetArtefactsFromPhase(Guid phaseId)
         {
-            IEnumerable<PhaseDTO> phases = await _phaseService.GetAllPhasesAsync(phaseId);
-            foreach (var phase in  phases)
-            {
-                Console.WriteLine(phase);
-            }
+            return await _artefactRepository.GetArtefactsFromPhase(phaseId);
+            
+        }
+
+        public async Task<bool> CreateArtefacts(Guid phaseId)
+        {
+            return await _artefactRepository.CreateArtefactsAsync(phaseId);
         }
     }
 }

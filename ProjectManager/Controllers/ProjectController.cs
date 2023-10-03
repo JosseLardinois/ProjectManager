@@ -96,16 +96,20 @@ namespace ProjectManager.Controllers
         [HttpGet("{id}/phases")]
         public async Task<IActionResult> GetPhasesOfProject(Guid id)
         {
-            
-            var i = await _phaseService.GetAllPhasesAsync(id);
-            Console.WriteLine(i);
-            return Ok();
+            try
+            {
+                return Ok(await _phaseService.GetAllPhasesAsync(id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
         }
 
         [HttpGet("{id}/tasks")]
-        public async Task<IActionResult> GetTasksOfProject(int id)
+        public async Task<IActionResult> GetTasksOfProject(Guid id)
         {
-            return Ok();
+            return Ok(await _artefactService.GetArtefactsFromPhase(id));
         }
     }
 }
