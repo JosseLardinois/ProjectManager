@@ -26,10 +26,29 @@ namespace ProjectManager.DAL
             const string query = @"SELECT * FROM Phase WHERE ProjectID = @ProjectID;";
 
             using var connection = CreateConnection();
+            connection.Open();
             var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectID = projectId });
-            Console.WriteLine(phases);
-            return phases;
+
+            // Create a new list of PhaseDTO
+            var phaseDTOList = new List<PhaseDTO>();
+
+            // Loop through the fetched rows and add them to the list of PhaseDTO
+            foreach (var phase in phases)
+            {
+                phaseDTOList.Add(phase);
+            }
+
+            // Writeline the PhaseDTO list
+            foreach (var phaseDTO in phaseDTOList)
+            {
+                Console.WriteLine(phaseDTO);
+            }
+            connection.Close();
+            return phaseDTOList;
         }
+
+
+
         public async Task<bool> CreatePhasesAsync(Guid projectId)
         {
             var phases = new List<Phase>
@@ -47,6 +66,7 @@ namespace ProjectManager.DAL
     ";
 
             using var connection = CreateConnection();
+            connection.Open();
             using var transaction = connection.BeginTransaction();
             try
             {
