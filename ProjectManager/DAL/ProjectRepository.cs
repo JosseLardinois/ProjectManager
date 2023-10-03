@@ -25,9 +25,13 @@ namespace ProjectManager.DAL
 
         public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
         {
-            const string query = @"SELECT * FROM Project WHERE ProjectID = @ProjectID;";
-            using var dbConnection = CreateConnection();
-            return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id = projectId });
+            using (var dbConnection = CreateConnection())
+    {
+        const string query = @"SELECT * FROM Project WHERE ProjectID = @ProjectID;";
+        return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id = projectId });
+    }
+
+           
         }
 
         public async Task<int> CreateProjectAsync(Project project)

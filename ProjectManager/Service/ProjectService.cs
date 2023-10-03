@@ -9,7 +9,6 @@ namespace ProjectManager.Service
     {
         private readonly IProjectRepository _projectRepository;
         private readonly IPhaseService _phaseService;
-        private readonly IArtefactRepository _artefactRepository;
 
         public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService)
         {
