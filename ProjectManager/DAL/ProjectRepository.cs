@@ -23,12 +23,12 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connectionString);
         }
 
-        public async Task<ProjectDTO> GetProjectAsync(Guid Id)
+        public async Task<Project> GetProjectAsync(Guid Id)
         {
             using (var dbConnection = CreateConnection())
                 {
                     const string query = @"SELECT * FROM Project WHERE Id = @Id;";
-                    return await dbConnection.QueryFirstOrDefaultAsync<ProjectDTO>(query, new { Id });           
+                    return await dbConnection.QueryFirstOrDefaultAsync<Project>(query, new { Id });           
                 }
         }
 

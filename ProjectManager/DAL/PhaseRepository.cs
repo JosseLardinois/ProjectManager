@@ -21,28 +21,28 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connetionString);
         }
 
-        public async Task<IEnumerable<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
+        public async Task<IEnumerable<Phase>> GetAllPhasesAsync(Guid projectId)
         {
             const string query = @"SELECT * FROM Phase WHERE ProjectId = @ProjectId;";
 
             using var connection = CreateConnection();
-            var phases = await connection.QueryAsync<PhaseDTO>(query, new { ProjectId = projectId });
+            var phases = await connection.QueryAsync<Phase>(query, new { ProjectId = projectId });
 
-            // Create a new list of PhaseDTO
-            var phaseDTOList = new List<PhaseDTO>();
+            // Create a new list of Phase
+            var phaseList = new List<Phase>();
 
             // Loop through the fetched rows and add them to the list of PhaseDTO
             foreach (var phase in phases)
             {
-                phaseDTOList.Add(phase);
+                phaseList.Add(phase);
             }
 
             // Writeline the PhaseDTO list
-            foreach (var phaseDTO in phaseDTOList)
+            foreach (var phaseDTO in phaseList)
             {
                 Console.WriteLine(phaseDTO);
             }
-            return phaseDTOList;
+            return phaseList;
         }
 
 
