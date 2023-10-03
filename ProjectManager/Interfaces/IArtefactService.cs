@@ -1,7 +1,11 @@
-﻿namespace ProjectManager.Interfaces
+﻿using ProjectManager.DTO;
+using ProjectManager.Models;
+
+namespace ProjectManager.Interfaces
 {
     public interface IArtefactService
     {
-        Task CreateArtefacts(Guid phaseId);
+        Task<IEnumerable<ArtefactDTO>> GetArtefactsFromPhase(Guid phaseId);
+        Task<bool> CreateArtefacts(List<PhaseDTO> phases);
     }
 }
