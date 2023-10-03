@@ -15,9 +15,9 @@ namespace ProjectManager.DAL
     {
         private readonly string _connectionString;
 
-        public ArtefactRepository(string connectionString)
+        public ArtefactRepository()
         {
-            _connectionString = connectionString;
+            _connectionString = "Server=localhost;Database=projectmanagement;User ID=root;Password=password;";
         }
 
         private IDbConnection CreateConnection()
@@ -38,11 +38,12 @@ namespace ProjectManager.DAL
             var artefacts = GenerateArtefacts(phaseIdMap);
 
             const string query = @"
-                INSERT INTO Phase (Id, Name, PhaseId, Artefact_Type) 
+                INSERT INTO artefact (Id, Name, PhaseId, Artefact_Type) 
                 VALUES (@Id, @Name, @PhaseId, @Artefact_Type);
             ";
 
             using var connection = CreateConnection();
+            connection.Open();
             using var transaction = connection.BeginTransaction();
 
             try
