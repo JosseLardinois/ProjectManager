@@ -21,6 +21,7 @@ namespace ProjectManager.DAL
             return new MySqlConnection(_connetionString);
         }
 
+
         public async Task<IEnumerable<Phase>> GetAllPhasesAsync(Guid projectId)
         {
             const string query = @"SELECT * FROM Phase WHERE ProjectId = @ProjectId;";
