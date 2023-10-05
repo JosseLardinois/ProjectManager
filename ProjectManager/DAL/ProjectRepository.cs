@@ -34,7 +34,6 @@ namespace ProjectManager.DAL
 
         public async Task<int> CreateProjectAsync(Project project)
         {
-            project.Id = Guid.NewGuid();
             project.Created_At = DateTime.Now;
             using (var dbConnection = CreateConnection())
             {

@@ -11,12 +11,14 @@ namespace ProjectManager.Service
         private readonly IProjectRepository _projectRepository;
         private readonly IPhaseService _phaseService;
         private readonly IArtefactService _artefactService;
+        private readonly IProjectOwnerService _projectOwnerService;
 
-        public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService, IArtefactService artefactService)
+        public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService, IArtefactService artefactService, IProjectOwnerService projectOwnerService)
         {
             _projectRepository = projectRepository;
             _phaseService = phaseService;
             _artefactService = artefactService;
+            _projectOwnerService = projectOwnerService;
         }
 
         public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
@@ -25,13 +27,22 @@ namespace ProjectManager.Service
             return MapToDTO(project); // Model to DTO for outgoing response
         }
 
-        public async Task<bool> CreateProjectAsync(ProjectDTO projectDto)
+        public async Task<bool> CreateProjectAsync(ProjectDTO projectDto, Guid ownerId)
         {
+            
+            var projectId = Guid.NewGuid();
+            projectDto.Id = projectId;
+            var projectownerDto = new ProjectOwnerDTO();
+            projectownerDto.ProjectId = projectId;
+            projectownerDto.OwnerId = ownerId;
+
+
             var project = MapToModel(projectDto); // DTO to Model for incoming request
             await _projectRepository.CreateProjectAsync(project);
             await _phaseService.CreatePhases(project.Id);
             var phases = await _phaseService.GetAllPhasesAsync(project.Id);
             await _artefactService.CreateArtefacts(phases);
+            await _projectOwnerService.AddProjectOwnerAsync(projectownerDto);
             return true;
         }
 

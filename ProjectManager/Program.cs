@@ -17,6 +17,8 @@ builder.Services.AddScoped<IPhaseRepository, PhaseRepository>();
 builder.Services.AddScoped<IPhaseService, PhaseService>();
 builder.Services.AddScoped<IArtefactRepository, ArtefactRepository>();
 builder.Services.AddScoped<IArtefactService, ArtefactService>();
+builder.Services.AddScoped<IProjectOwnerRepository, ProjectOwnerRepository>();
+builder.Services.AddScoped<IProjectOwnerService, ProjectOwnerService>();
 
 var app = builder.Build();
 

@@ -1,6 +1,6 @@
 ﻿namespace ProjectManager.DTO
 {
-    public class ProjectOwner
+    public class ProjectOwnerDTO
     {
         public Guid ProjectId { get; set; }
         public Guid OwnerId { get; set; }
