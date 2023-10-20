@@ -49,7 +49,6 @@ namespace ProjectManager.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
@@ -65,11 +64,10 @@ namespace ProjectManager.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(updatedProject);
+                return Ok();
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
@@ -89,10 +87,46 @@ namespace ProjectManager.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
+
+
+        [HttpPut("/updatephase")]
+        public async Task<IActionResult> UpdatePhase(PhaseDTO phase)
+        {
+            try
+            {
+                var updatedProject = await _phaseService.UpdatePhaseAsync(phase);
+                if (updatedProject == false)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("/isotherphaseactive")]
+        public async Task<IActionResult> IsAPhaseActive(Guid projectId)
+        {
+
+            try{
+                return Ok(await _phaseService.IsAPhaseActive(projectId));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+        }
+
+
+
+
 
         [HttpGet("{id}/phases")]
         public async Task<IActionResult> GetPhasesOfProject(Guid id)

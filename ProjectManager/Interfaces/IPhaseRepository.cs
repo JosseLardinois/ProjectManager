@@ -7,5 +7,9 @@ namespace ProjectManager.Interfaces
     {
         Task<bool> CreatePhasesAsync(Guid projectId);
         Task<IEnumerable<Phase>> GetAllPhasesAsync(Guid projectId);
+
+        Task<bool> UpdatePhaseAsync(Phase phase);
+
+        Task<bool> IsAPhaseActive(Guid projectId);
     }
 }

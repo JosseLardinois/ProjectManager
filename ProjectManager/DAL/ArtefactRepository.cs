@@ -63,6 +63,8 @@ namespace ProjectManager.DAL
             }
         }
 
+
+
         private List<Artefact> GenerateArtefacts(Dictionary<string, Guid> phaseIdMap)
         {
             return new List<Artefact>

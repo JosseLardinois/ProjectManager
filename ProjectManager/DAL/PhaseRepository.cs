@@ -46,6 +46,24 @@ namespace ProjectManager.DAL
             return phaseList;
         }
 
+        public async Task<bool> IsAPhaseActive(Guid projectId)
+        {
+            const string query = @"SELECT COUNT(*) FROM Phase WHERE ProjectId = @ProjectId AND Status = 'Active'";
+            using var connection = CreateConnection();
+            int activePhaseCount = await connection.ExecuteScalarAsync<int>(query, new { ProjectId = projectId });
+            return activePhaseCount >= 1;  // returns true if there's at least one active phase
+        }
+
+
+        public async Task<bool> UpdatePhaseAsync(Phase phase)
+        {
+            const string query = @"UPDATE Phase SET Completed_By = @Completed_By, Completed_At = @Completed_At, Status = @Status WHERE Id = @Id;";
+            var affectedRows = await CreateConnection().ExecuteAsync(query, phase);
+            return affectedRows > 0;
+        }
+
+        
+
 
 
         public async Task<bool> CreatePhasesAsync(Guid projectId)
@@ -59,9 +77,7 @@ namespace ProjectManager.DAL
         new Phase { Name = "Production Phase", ProjectId = projectId, Id = Guid.NewGuid() }
     };
 
-            const string query = @"
-        INSERT INTO Phase (Id, Name, ProjectId) 
-        VALUES (@Id, @Name, @ProjectId);
+            const string query = @"INSERT INTO Phase (Id, Name, ProjectId) VALUES (@Id, @Name, @ProjectId);
     ";
 
             using var connection = CreateConnection();
