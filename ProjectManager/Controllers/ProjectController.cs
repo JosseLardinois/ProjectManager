@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjectManager.DTO;
 using ProjectManager.DTOs;
 using ProjectManager.Interfaces;
 using ProjectManager.Models;
@@ -14,12 +15,14 @@ namespace ProjectManager.Controllers
         private readonly IProjectService _projectService;
         private readonly IPhaseService _phaseService;
         private readonly IArtefactService _artefactService;
+        private readonly IProjectOwnerService _projectownerService;
 
-        public ProjectController(IProjectService projectService, IPhaseService phaseService, IArtefactService artefact)
+        public ProjectController(IProjectService projectService, IPhaseService phaseService, IArtefactService artefact, IProjectOwnerService projectownerService)
         {
             _projectService = projectService;
             _phaseService = phaseService;
             _artefactService = artefact;
+            _projectownerService = projectownerService;
         }
 
 
@@ -37,18 +40,15 @@ namespace ProjectManager.Controllers
 
         // Create method with error handling
         [HttpPost]
-        public async Task<IActionResult> CreateProject(ProjectDTO project)
+        public async Task<IActionResult> CreateProject(ProjectDTO project, Guid ownerId)
         {
-            await _projectService.CreateProjectAsync(project);
-            return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             try
             {
-                await _projectService.CreateProjectAsync(project);
+                await _projectService.CreateProjectAsync(project, ownerId);
                 return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
@@ -64,11 +64,10 @@ namespace ProjectManager.Controllers
                 {
                     return NotFound();
                 }
-                return Ok(updatedProject);
+                return Ok();
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
@@ -88,10 +87,46 @@ namespace ProjectManager.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception (not shown)
                 return StatusCode(500, ex);
             }
         }
+
+
+        [HttpPut("/updatephase")]
+        public async Task<IActionResult> UpdatePhase(PhaseDTO phase)
+        {
+            try
+            {
+                var updatedProject = await _phaseService.UpdatePhaseAsync(phase);
+                if (updatedProject == false)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("/isotherphaseactive")]
+        public async Task<IActionResult> IsAPhaseActive(Guid projectId)
+        {
+
+            try{
+                return Ok(await _phaseService.IsAPhaseActive(projectId));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+        }
+
+
+
+
 
         [HttpGet("{id}/phases")]
         public async Task<IActionResult> GetPhasesOfProject(Guid id)
@@ -106,10 +141,16 @@ namespace ProjectManager.Controllers
             }
         }
 
-        [HttpGet("{id}/tasks")]
-        public async Task<IActionResult> GetTasksOfProject(Guid id)
+        [HttpGet("{id}/projectowners")]
+        public async Task<IActionResult> GetProjectOwners(Guid id)
         {
-            return Ok(await _artefactService.GetArtefactsFromPhase(id));
+            return Ok(await _projectownerService.GetProjectOwnersByProjectIdAsync(id));
+        }
+
+        [HttpPost("/projectowners")]
+        public async Task<IActionResult> PostProjectOwners(ProjectOwnerDTO projectOwnerDTO)
+        {
+            return Ok(await _projectownerService.AddProjectOwnerAsync(projectOwnerDTO));
         }
     }
 }

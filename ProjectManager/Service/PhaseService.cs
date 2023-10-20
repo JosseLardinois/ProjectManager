@@ -25,6 +25,17 @@ namespace ProjectManager.Service
             return phases.Select(MapToDTO).ToList(); // Model to DTO for outgoing response
         }
 
+        public async Task<bool> UpdatePhaseAsync(PhaseDTO phaseDto)
+        {
+            var phase = MapToModel(phaseDto); // DTO to Model for incoming request
+            return await _phaseRepository.UpdatePhaseAsync(phase);
+        }
+
+        public async Task<bool> IsAPhaseActive(Guid projectId)
+        {
+            return await _phaseRepository.IsAPhaseActive(projectId);
+        }
+
 
         private Phase MapToModel(PhaseDTO phaseDto)
         {
@@ -33,7 +44,7 @@ namespace ProjectManager.Service
                 Id = phaseDto.Id,
                 Name = phaseDto.Name,
                 Completed = phaseDto.Completed,
-                Active = phaseDto.Active,
+                Status = phaseDto.Status,
                 Completed_By = phaseDto.Completed_By,
                 Completed_At = phaseDto.Completed_At,
                 ProjectId = phaseDto.ProjectId,
@@ -48,7 +59,7 @@ namespace ProjectManager.Service
                 Id = phase.Id,
                 Name = phase.Name,
                 Completed = phase.Completed,
-                Active = phase.Active,
+                Status = phase.Status,
                 Completed_By = phase.Completed_By,
                 Completed_At = phase.Completed_At,
                 ProjectId = phase.ProjectId,
