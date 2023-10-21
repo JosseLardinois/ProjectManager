@@ -6,6 +6,6 @@ namespace ProjectManager.Interfaces
     public interface IArtefactService
     {
         Task<IEnumerable<ArtefactDTO>> GetArtefactsFromPhase(Guid phaseId);
-        Task<bool> CreateArtefacts(List<PhaseDTO> phases);
+        Task<bool> CreateArtefacts(List<PhaseDTO> phases, List<DefaultArtefactDTO> defaultArtefacts);
     }
 }

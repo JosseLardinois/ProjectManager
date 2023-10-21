@@ -3,6 +3,7 @@ using ProjectManager.DTO;
 using ProjectManager.DTOs;
 using ProjectManager.Interfaces;
 using ProjectManager.Models;
+using ZstdSharp.Unsafe;
 
 namespace ProjectManager.Service
 {
@@ -12,13 +13,15 @@ namespace ProjectManager.Service
         private readonly IPhaseService _phaseService;
         private readonly IArtefactService _artefactService;
         private readonly IProjectOwnerService _projectOwnerService;
+        private readonly IDefaultArtefactService _defaultArtefactService;
 
-        public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService, IArtefactService artefactService, IProjectOwnerService projectOwnerService)
+        public ProjectService(IProjectRepository projectRepository, IPhaseService phaseService, IArtefactService artefactService, IProjectOwnerService projectOwnerService, IDefaultArtefactService defaultArtefactService)
         {
             _projectRepository = projectRepository;
             _phaseService = phaseService;
             _artefactService = artefactService;
             _projectOwnerService = projectOwnerService;
+            _defaultArtefactService = defaultArtefactService;
         }
 
         public async Task<ProjectDTO> GetProjectAsync(Guid projectId)
@@ -37,18 +40,25 @@ namespace ProjectManager.Service
             projectownerDto.OwnerId = ownerId;
 
 
-            var project = MapToModel(projectDto); // DTO to Model for incoming request
+            var project = MapToModel(projectDto);
+            //Create project
             await _projectRepository.CreateProjectAsync(project);
+            //Create Phases
             await _phaseService.CreatePhases(project.Id);
+            //Get Phases
             var phases = await _phaseService.GetAllPhasesAsync(project.Id);
-            await _artefactService.CreateArtefacts(phases);
+            //Get Artefacts
+            var defaultArtefacts = await _defaultArtefactService.GetAllDefaultArtefacts();
+            //Create project artefacts
+            await _artefactService.CreateArtefacts(phases, defaultArtefacts);
+            //Add Owner To Project
             await _projectOwnerService.AddProjectOwnerAsync(projectownerDto);
             return true;
         }
 
         public async Task<bool> UpdateProjectAsync(ProjectDTO projectDto)
         {
-            var project = MapToModel(projectDto); // DTO to Model for incoming request
+            var project = MapToModel(projectDto);
             return await _projectRepository.UpdateProjectAsync(project);
         }
 
