@@ -16,13 +16,15 @@ namespace ProjectManager.Controllers
         private readonly IPhaseService _phaseService;
         private readonly IArtefactService _artefactService;
         private readonly IProjectOwnerService _projectownerService;
+        private readonly IDefaultArtefactService _defaultArtefactService;
 
-        public ProjectController(IProjectService projectService, IPhaseService phaseService, IArtefactService artefact, IProjectOwnerService projectownerService)
+        public ProjectController(IProjectService projectService, IPhaseService phaseService, IArtefactService artefact, IProjectOwnerService projectownerService, IDefaultArtefactService defaultArtefactService)
         {
             _projectService = projectService;
             _phaseService = phaseService;
             _artefactService = artefact;
             _projectownerService = projectownerService;
+            _defaultArtefactService = defaultArtefactService;
         }
 
 
@@ -124,7 +126,18 @@ namespace ProjectManager.Controllers
 
         }
 
-
+        [HttpGet("/GetAllDefaultArtefacts")]
+        public async Task<IActionResult> GetAllDefaultArtefacts()
+        {
+            try
+            {
+                return Ok(await _defaultArtefactService.GetAllDefaultArtefacts());
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
 
 
 

@@ -20,9 +20,9 @@ namespace ProjectManager.Service
 
         }
 
-        public async Task<bool> CreateArtefacts(List<PhaseDTO> phaseDTOs)
+        public async Task<bool> CreateArtefacts(List<PhaseDTO> phaseDTOs, List<DefaultArtefactDTO> defaultArtefactDTOs)
         {
-            return await _artefactRepository.CreateArtefactsAsync(phaseDTOs);
+            return await _artefactRepository.CreateArtefactsAsync(phaseDTOs, defaultArtefactDTOs);
         }
 
 
@@ -31,12 +31,9 @@ namespace ProjectManager.Service
             return new Artefact
             {
                 Id = artefactDto.Id,
-                Name = artefactDto.Name,
                 Completed = artefactDto.Completed,
                 Completed_By = artefactDto.Completed_By,
-                Completed_At = artefactDto.Completed_At,
-                Artefact_Type = artefactDto.Artefact_Type,
-
+                Completed_At = artefactDto.Completed_At
             };
         }
 
@@ -45,11 +42,9 @@ namespace ProjectManager.Service
             return new ArtefactDTO
             {
                 Id = artefact.Id,
-                Name = artefact.Name,
                 Completed = artefact.Completed,
                 Completed_By = artefact.Completed_By,
                 Completed_At = artefact.Completed_At,
-                Artefact_Type = artefact.Artefact_Type,
             };
         }
     }

@@ -19,6 +19,8 @@ builder.Services.AddScoped<IArtefactRepository, ArtefactRepository>();
 builder.Services.AddScoped<IArtefactService, ArtefactService>();
 builder.Services.AddScoped<IProjectOwnerRepository, ProjectOwnerRepository>();
 builder.Services.AddScoped<IProjectOwnerService, ProjectOwnerService>();
+builder.Services.AddScoped<IDefaultArtefactRepository, DefaultArtefactRepository>();
+builder.Services.AddScoped<IDefaultArtefactService, DefaultArtefactService>();
 
 var app = builder.Build();
 
