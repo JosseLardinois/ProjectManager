@@ -24,16 +24,37 @@ namespace ProjectManager.Service
         {
             return await _artefactRepository.CreateArtefactsAsync(phaseDTOs, defaultArtefactDTOs);
         }
+        public async Task<bool> UpdateArtefactStatusAsync(ArtefactDTO artefactDto)
+        {
+            if (artefactDto == null)
+            {
+                throw new ArgumentNullException(nameof(artefactDto));
+            }
+            var artefact = MapToModel(artefactDto);
+            return await _artefactRepository.UpdateArtefactStatus(artefact);
+        }
+        public async Task<IEnumerable<ArtefactDTO>> GetArtefactsFromProject(Guid projectId)
+        {
+            var artefacts = await _artefactRepository.GetArtefactsFromProject(projectId);
+            return artefacts.Select(MapToDTO);
+        }
 
+        public async Task<IEnumerable<ArtefactDTO>> GetStatusArtefactsFromPhase(Guid phaseId, string status)
+        {
+            var artefacts = await _artefactRepository.GetStatusArtefactsFromPhase(phaseId, status);
+            return artefacts.Select(MapToDTO);
+        }
 
         private Artefact MapToModel(ArtefactDTO artefactDto)
         {
             return new Artefact
             {
                 Id = artefactDto.Id,
-                Completed = artefactDto.Completed,
+                Status = artefactDto.Status,
                 Completed_By = artefactDto.Completed_By,
-                Completed_At = artefactDto.Completed_At
+                Completed_At = artefactDto.Completed_At,
+                PhaseId = artefactDto.PhaseId,
+                DefaultArtefactId = artefactDto.DefaultArtefactId
             };
         }
 
@@ -42,9 +63,11 @@ namespace ProjectManager.Service
             return new ArtefactDTO
             {
                 Id = artefact.Id,
-                Completed = artefact.Completed,
+                Status = artefact.Status,
                 Completed_By = artefact.Completed_By,
                 Completed_At = artefact.Completed_At,
+                PhaseId = artefact.PhaseId,
+                DefaultArtefactId = artefact.DefaultArtefactId
             };
         }
     }

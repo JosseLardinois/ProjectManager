@@ -41,7 +41,7 @@ namespace ProjectManager.Controllers
         }
 
         // Create method with error handling
-        [HttpPost]
+        [HttpPost("CreateProject")]
         public async Task<IActionResult> CreateProject(ProjectDTO project, Guid ownerId)
         {
             try
@@ -56,7 +56,7 @@ namespace ProjectManager.Controllers
         }
 
         // Update method with error handling
-        [HttpPut]
+        [HttpPut("UpdateProject")]
         public async Task<IActionResult> UpdateProject(ProjectDTO project)
         {
             try
@@ -93,8 +93,23 @@ namespace ProjectManager.Controllers
             }
         }
 
+        [HttpGet("/IsAPhaseActive")]
+        public async Task<IActionResult> IsAPhaseActive(Guid projectId)
+        {
 
-        [HttpPut("/updatephase")]
+            try
+            {
+                return Ok(await _phaseService.IsAPhaseActive(projectId));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+        }
+
+
+        [HttpPut("/UpdatePhase")]
         public async Task<IActionResult> UpdatePhase(PhaseDTO phase)
         {
             try
@@ -112,12 +127,27 @@ namespace ProjectManager.Controllers
             }
         }
 
-        [HttpGet("/isotherphaseactive")]
-        public async Task<IActionResult> IsAPhaseActive(Guid projectId)
-        {
 
-            try{
-                return Ok(await _phaseService.IsAPhaseActive(projectId));
+        [HttpGet("{id}/GetPhasesOfProject")]
+        public async Task<IActionResult> GetPhasesOfProject(Guid id)
+        {
+            try
+            {
+                return Ok(await _phaseService.GetAllPhasesAsync(id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("{phaseid}/GetAllArtefactsFromPhase")]
+        public async Task<IActionResult> GetAllArtefactsFromPhase(Guid phaseid)
+        {
+            try
+            {
+                var artefacts = await _artefactService.GetArtefactsFromPhase(phaseid);
+                return Ok(artefacts);
             }
             catch (Exception ex)
             {
@@ -125,6 +155,88 @@ namespace ProjectManager.Controllers
             }
 
         }
+
+        [HttpGet("/GetAllArtefactsFromProject")]
+        public async Task<IActionResult> GetAllArtefactsFromProject(Guid projectId)
+        {
+            try
+            {
+                var artefacts = await _artefactService.GetArtefactsFromProject(projectId);
+                return Ok(artefacts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+        }
+
+        [HttpGet("/GetStatusArtefactsFromPhase")]
+        public async Task<IActionResult> GetStatusArtefactsFromPhase(Guid phaseId, string status)
+        {
+            try
+            {
+                var artefacts = await _artefactService.GetStatusArtefactsFromPhase(phaseId, status);
+                return Ok(artefacts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+        }
+
+        [HttpPut("/UpdateArtefactStatus")]
+        public async Task<IActionResult> UpdateArtefactStatus(ArtefactDTO artefact)
+        {
+            try
+            {
+                return Ok(await _artefactService.UpdateArtefactStatusAsync(artefact));
+
+            }
+            catch (Exception ex)
+            { 
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPost("CreateDefaultArtefact")]
+        public async Task<IActionResult> CreateDefaultArtefact(DefaultArtefactDTO artefact)
+        {
+            if (artefact == null)
+            {
+                return BadRequest("Artefact data is null.");
+            }
+
+            var result = await _defaultArtefactService.CreateDefaultArtefactAsync(artefact);
+            return Ok(result);
+        }
+
+        // PUT: api/DefaultArtefacts/{id}
+        [HttpPut("{id}/UpdateDefaultArtefact")]
+        public async Task<IActionResult> UpdateDefaultArtefact(DefaultArtefactDTO artefact)
+        {
+            var result = await _defaultArtefactService.UpdateDefaultArtefactAsync(artefact);
+            if (result)
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
+
+        // DELETE: api/DefaultArtefacts/{id}
+        [HttpDelete("{id}/DeleteDefaultArtefact")]
+        public async Task<IActionResult> DeleteDefaultArtefact(int id)
+        {
+            var result = await _defaultArtefactService.DeleteDefaultArtefactAsync(id);
+            if (result)
+            {
+                return NoContent();
+            }
+            return NotFound();
+        }
+
+
 
         [HttpGet("/GetAllDefaultArtefacts")]
         public async Task<IActionResult> GetAllDefaultArtefacts()
@@ -141,18 +253,6 @@ namespace ProjectManager.Controllers
 
 
 
-        [HttpGet("{id}/phases")]
-        public async Task<IActionResult> GetPhasesOfProject(Guid id)
-        {
-            try
-            {
-                return Ok(await _phaseService.GetAllPhasesAsync(id));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
 
         [HttpGet("{id}/projectowners")]
         public async Task<IActionResult> GetProjectOwners(Guid id)

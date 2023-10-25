@@ -32,6 +32,30 @@ namespace ProjectManager.DAL
             return await connection.QueryAsync<Artefact>(query, new { PhaseId = phaseId });
         }
 
+        public async Task<bool> UpdateArtefactStatus(Artefact artefact)
+        {
+            const string query = @"UPDATE artefact SET Status = @Status, Completed_By = @Completed_By, Completed_At = @Completed_At WHERE Id = @Id;";
+            var affectedRows = await CreateConnection().ExecuteAsync(query, artefact);
+            return affectedRows > 0;
+        }
+
+        public async Task<IEnumerable<Artefact>> GetStatusArtefactsFromPhase(Guid phaseId, string status)
+        {
+            const string query = @"SELECT * FROM artefact WHERE PhaseId = @PhaseId AND Status = @Status;";
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Artefact>(query, new { PhaseId = phaseId, Status = status });
+        }
+
+        public async Task<IEnumerable<Artefact>> GetArtefactsFromProject(Guid projectId)
+        {
+            const string query = @"SELECT a.Id AS ArtefactId, a.Status, a.Completed_By, a.Completed_At, da.Name AS DefaultArtefactName, da.Artefact_Type, FROM artefact a JOIN defaultartefacts da ON a.DefaultArtefactId = da.Id
+                                    JOIN Phase ph ON a.PhaseId = ph.Id JOIN Project p ON ph.ProjectId = p.Id WHERE p.Id = @ProjectId";
+            using var connection = CreateConnection();
+            return await connection.QueryAsync<Artefact>(query, new { ProjectId = projectId});
+        }
+
+
+
         public async Task<bool> CreateArtefactsAsync(List<PhaseDTO> phases, List<DefaultArtefactDTO> defaultArtefacts)
         {
             var phaseIdMap = phases.ToDictionary(phase => phase.Name, phase => phase.Id);
@@ -41,7 +65,7 @@ namespace ProjectManager.DAL
             var artefacts = defaultArtefacts.Select(da => new Artefact
             {
                 Id = Guid.NewGuid(),
-                PhaseId = phaseIdMap[da.Phase], // Assuming the name in defaultartefacts matches the phase name in phaseIdMap
+                PhaseId = phaseIdMap[da.Phase], 
                 DefaultArtefactId = da.Id
             }).ToList();
 
@@ -66,6 +90,9 @@ namespace ProjectManager.DAL
                 return false;
             }
         }
+
+
+
 
     }
 }
