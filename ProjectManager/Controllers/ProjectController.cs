@@ -159,15 +159,8 @@ namespace ProjectManager.Controllers
         [HttpGet("/GetAllArtefactsFromProject")]
         public async Task<IActionResult> GetAllArtefactsFromProject(Guid projectId)
         {
-            try
-            {
                 var artefacts = await _artefactService.GetArtefactsFromProject(projectId);
                 return Ok(artefacts);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
 
         }
 

@@ -10,7 +10,7 @@ namespace ProjectManager.Interfaces
         Task<bool> CreateArtefacts(List<PhaseDTO> phases, List<DefaultArtefactDTO> defaultArtefacts);
         Task<bool> UpdateArtefactStatusAsync(ArtefactDTO artefactDto);
 
-        Task<IEnumerable<ArtefactDTO>> GetArtefactsFromProject(Guid projectId);
+        Task<IEnumerable<ProjectArtefactDTO>> GetArtefactsFromProject(Guid projectId);
 
         Task<IEnumerable<ArtefactDTO>> GetStatusArtefactsFromPhase(Guid phaseId, string status);
     }

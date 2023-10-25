@@ -33,10 +33,9 @@ namespace ProjectManager.Service
             var artefact = MapToModel(artefactDto);
             return await _artefactRepository.UpdateArtefactStatus(artefact);
         }
-        public async Task<IEnumerable<ArtefactDTO>> GetArtefactsFromProject(Guid projectId)
+        public async Task<IEnumerable<ProjectArtefactDTO>> GetArtefactsFromProject(Guid projectId)
         {
-            var artefacts = await _artefactRepository.GetArtefactsFromProject(projectId);
-            return artefacts.Select(MapToDTO);
+            return await _artefactRepository.GetArtefactsFromProject(projectId);
         }
 
         public async Task<IEnumerable<ArtefactDTO>> GetStatusArtefactsFromPhase(Guid phaseId, string status)
