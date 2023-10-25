@@ -26,8 +26,6 @@ namespace ProjectManager.Controllers
             _projectownerService = projectownerService;
             _defaultArtefactService = defaultArtefactService;
         }
-
-
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProject(Guid id)
         {
