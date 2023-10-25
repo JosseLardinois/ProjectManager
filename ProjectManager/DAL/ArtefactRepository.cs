@@ -46,12 +46,12 @@ namespace ProjectManager.DAL
             return await connection.QueryAsync<Artefact>(query, new { PhaseId = phaseId, Status = status });
         }
 
-        public async Task<IEnumerable<Artefact>> GetArtefactsFromProject(Guid projectId)
+        public async Task<IEnumerable<ProjectArtefactDTO>> GetArtefactsFromProject(Guid projectId)
         {
-            const string query = @"SELECT a.Id AS ArtefactId, a.Status, a.Completed_By, a.Completed_At, da.Name AS DefaultArtefactName, da.Artefact_Type, FROM artefact a JOIN defaultartefacts da ON a.DefaultArtefactId = da.Id
+            const string query = @"SELECT a.Id, a.Status, a.Completed_By, a.Completed_At, da.Name AS DefaultArtefactName, da.Artefact_Type FROM artefact a JOIN defaultartefacts da ON a.DefaultArtefactId = da.Id
                                     JOIN Phase ph ON a.PhaseId = ph.Id JOIN Project p ON ph.ProjectId = p.Id WHERE p.Id = @ProjectId";
             using var connection = CreateConnection();
-            return await connection.QueryAsync<Artefact>(query, new { ProjectId = projectId});
+            return await connection.QueryAsync<ProjectArtefactDTO>(query, new { ProjectId = projectId});
         }
 
 
