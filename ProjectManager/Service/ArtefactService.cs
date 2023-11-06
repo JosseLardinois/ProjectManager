@@ -19,11 +19,6 @@ namespace ProjectManager.Service
             return artefacts.Select(MapToDTO);
 
         }
-
-        public async Task<bool> CreateArtefacts(List<PhaseDTO> phaseDTOs, List<DefaultArtefactDTO> defaultArtefactDTOs)
-        {
-            return await _artefactRepository.CreateArtefactsAsync(phaseDTOs, defaultArtefactDTOs);
-        }
         public async Task<bool> UpdateArtefactStatusAsync(ArtefactDTO artefactDto)
         {
             if (artefactDto == null)

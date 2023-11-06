@@ -32,17 +32,76 @@ namespace ProjectManager.DAL
                 }
         }
 
-        public async Task<int> CreateProjectAsync(Project project)
+        public async Task<bool> CreateProjectTransactional(Project project, Guid ownerId)
         {
-            project.Created_At = DateTime.Now;
-            using (var dbConnection = CreateConnection())
-            {
-                const string query = @"INSERT INTO Project (Id, Name, Created_At) 
-                                       VALUES (@Id, @Name, @created_At);
-                                       SELECT LAST_INSERT_ID();";
-                return await dbConnection.ExecuteScalarAsync<int>(query, project);
+                using (var connection = CreateConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            // Create project
+                            const string createProjectQuery = @"INSERT INTO Project (Id, Name, Created_At) 
+                                                    VALUES (@Id, @Name, @Created_At);";
+                            await connection.ExecuteAsync(createProjectQuery, project, transaction);
+
+                            // Create phases
+                            var phases = new List<Phase>
+                {
+                    new Phase { Name = "Commercial Phase", ProjectId = project.Id, Id = Guid.NewGuid() },
+                    new Phase { Name = "Inception Phase", ProjectId = project.Id, Id = Guid.NewGuid() },
+                    new Phase { Name = "Elaboration Phase", ProjectId = project.Id, Id = Guid.NewGuid() },
+                    new Phase { Name = "Construction Phase", ProjectId = project.Id, Id = Guid.NewGuid() },
+                    new Phase { Name = "Production Phase", ProjectId = project.Id, Id = Guid.NewGuid() }
+                };
+
+                            const string createPhasesQuery = @"INSERT INTO Phase (Id, Name, ProjectId) 
+                                                   VALUES (@Id, @Name, @ProjectId);";
+                            foreach (var phase in phases)
+                            {
+                                await connection.ExecuteAsync(createPhasesQuery, phase, transaction);
+                            }
+
+                            // Get all default artefacts
+                            const string fetchDefaultArtefactsQuery = @"SELECT * FROM defaultartefacts;";
+                            var defaultArtefacts = (await connection.QueryAsync<DefaultArtefact>(fetchDefaultArtefactsQuery, transaction: transaction)).ToList();
+
+                            // Create artefacts
+                            var artefacts = defaultArtefacts.Select(da => new Artefact
+                            {
+                                Id = Guid.NewGuid(),
+                                PhaseId = phases.Single(p => p.Name == da.Phase).Id,
+                                DefaultArtefactId = da.Id
+                            }).ToList();
+
+                            const string insertArtefactQuery = @"INSERT INTO artefact (Id, PhaseId, DefaultArtefactId) 
+                                                     VALUES (@Id, @PhaseId, @DefaultArtefactId);";
+                            foreach (var artefact in artefacts)
+                            {
+                                await connection.ExecuteAsync(insertArtefactQuery, artefact, transaction);
+                            }
+
+                            // Add project owner
+                            const string addProjectOwnerQuery = @"INSERT INTO ProjectOwner (ProjectId, OwnerId) 
+                                                      VALUES (@ProjectId, @OwnerId);";
+                            await connection.ExecuteAsync(addProjectOwnerQuery, new { ProjectId = project.Id, OwnerId = ownerId }, transaction);
+
+                            // Commit the transaction
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback the transaction if any exception occurs
+                            transaction.Rollback();
+                            // Log the exception (logging code should be here)
+                            Console.WriteLine(ex.Message);
+                            return false;
+                        }
+                    }
+                }
             }
-        }
 
         public async Task<bool> UpdateProjectAsync(Project project)
         {
@@ -53,9 +112,53 @@ namespace ProjectManager.DAL
 
         public async Task<bool> DeleteProjectAsync(Guid projectId)
         {
-            const string query = @"DELETE FROM Project WHERE ProjectId = @ProjectId;";
-            var affectedRows = await CreateConnection().ExecuteAsync(query, new { Id = projectId });
-            return affectedRows > 0;
+            using (var connection = CreateConnection())
+            {
+                connection.Open();
+                // Start a transaction
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        // Delete artefacts related to the project
+                        var deleteArtefactsQuery = @"
+                    DELETE FROM artefact
+                    WHERE PhaseId IN (
+                        SELECT Id FROM Phase WHERE ProjectId = @ProjectId
+                    );";
+                        await connection.ExecuteAsync(deleteArtefactsQuery, new { ProjectId = projectId }, transaction);
+
+                        // Delete phases related to the project
+                        var deletePhasesQuery = @"
+                    DELETE FROM Phase WHERE ProjectId = @ProjectId;";
+                        await connection.ExecuteAsync(deletePhasesQuery, new { ProjectId = projectId }, transaction);
+
+                        // Delete project-owner associations
+                        var deleteProjectOwnersQuery = @"
+                    DELETE FROM ProjectOwner WHERE ProjectId = @ProjectId;";
+                        await connection.ExecuteAsync(deleteProjectOwnersQuery, new { ProjectId = projectId }, transaction);
+
+                        // Finally, delete the project itself
+                        var deleteProjectQuery = @"
+                    DELETE FROM Project WHERE Id = @ProjectId;";
+                        var affectedRows = await connection.ExecuteAsync(deleteProjectQuery, new { ProjectId = projectId }, transaction);
+
+                        // Commit the transaction
+                        transaction.Commit();
+                        connection.Close();
+
+                        return affectedRows > 0;
+                    }
+                    catch (Exception ex)
+                    {
+                        // Rollback the transaction if any exception occurs
+                        transaction.Rollback();
+                        // Log the exception (logging code should be here)
+                        throw;
+                    }
+                }
+            }
         }
+
     }
 }

@@ -252,7 +252,7 @@ namespace ProjectManager.Controllers
         }
 
         [HttpPost("/projectowners")]
-        public async Task<IActionResult> PostProjectOwners(ProjectOwnerDTO projectOwnerDTO)
+        public async Task<IActionResult> AddProjectOwners(ProjectOwnerDTO projectOwnerDTO)
         {
             return Ok(await _projectownerService.AddProjectOwnerAsync(projectOwnerDTO));
         }

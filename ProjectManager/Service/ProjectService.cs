@@ -41,19 +41,8 @@ namespace ProjectManager.Service
 
 
             var project = MapToModel(projectDto);
-            //Create project
-            await _projectRepository.CreateProjectAsync(project);
-            //Create Phases
-            await _phaseService.CreatePhases(project.Id);
-            //Get Phases
-            var phases = await _phaseService.GetAllPhasesAsync(project.Id);
-            //Get Artefacts
-            var defaultArtefacts = await _defaultArtefactService.GetAllDefaultArtefacts();
-            //Create project artefacts
-            await _artefactService.CreateArtefacts(phases, defaultArtefacts);
-            //Add Owner To Project
-            await _projectOwnerService.AddProjectOwnerAsync(projectownerDto);
-            return true;
+
+            return await _projectRepository.CreateProjectTransactional(project, ownerId);
         }
 
         public async Task<bool> UpdateProjectAsync(ProjectDTO projectDto)

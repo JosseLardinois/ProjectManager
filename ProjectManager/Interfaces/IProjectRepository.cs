@@ -7,8 +7,8 @@ namespace ProjectManager.DAL
     public interface IProjectRepository
     {
         Task<Project> GetProjectAsync(Guid projectId);
-        Task<int> CreateProjectAsync(Project project);
         Task<bool> UpdateProjectAsync(Project project);
         Task<bool> DeleteProjectAsync(Guid projectId);
+        Task<bool> CreateProjectTransactional(Project project, Guid ownerId);
     }
 }

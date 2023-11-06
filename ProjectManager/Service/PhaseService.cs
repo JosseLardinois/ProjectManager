@@ -13,12 +13,6 @@ namespace ProjectManager.Service
             _phaseRepository = phaseRepository;
         }
 
-        public async Task<bool> CreatePhases(Guid projectId)
-        {
-            return await _phaseRepository.CreatePhasesAsync(projectId);
-
-            
-        }
         public async Task<List<PhaseDTO>> GetAllPhasesAsync(Guid projectId)
         {
             var phases = await _phaseRepository.GetAllPhasesAsync(projectId);
@@ -43,7 +37,6 @@ namespace ProjectManager.Service
             {
                 Id = phaseDto.Id,
                 Name = phaseDto.Name,
-                Completed = phaseDto.Completed,
                 Status = phaseDto.Status,
                 Completed_By = phaseDto.Completed_By,
                 Completed_At = phaseDto.Completed_At,
@@ -58,7 +51,6 @@ namespace ProjectManager.Service
             {
                 Id = phase.Id,
                 Name = phase.Name,
-                Completed = phase.Completed,
                 Status = phase.Status,
                 Completed_By = phase.Completed_By,
                 Completed_At = phase.Completed_At,

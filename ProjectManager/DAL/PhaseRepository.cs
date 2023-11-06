@@ -61,46 +61,5 @@ namespace ProjectManager.DAL
             var affectedRows = await CreateConnection().ExecuteAsync(query, phase);
             return affectedRows > 0;
         }
-
-        
-
-
-
-        public async Task<bool> CreatePhasesAsync(Guid projectId)
-        {
-            var phases = new List<Phase>
-    {
-        new Phase { Name = "Commercial Phase", ProjectId = projectId, Id = Guid.NewGuid() },
-        new Phase { Name = "Inception Phase", ProjectId = projectId, Id = Guid.NewGuid() },
-        new Phase { Name = "Elaboration Phase", ProjectId = projectId, Id = Guid.NewGuid() },
-        new Phase { Name = "Construction Phase", ProjectId = projectId, Id = Guid.NewGuid() },
-        new Phase { Name = "Production Phase", ProjectId = projectId, Id = Guid.NewGuid() }
-    };
-
-            const string query = @"INSERT INTO Phase (Id, Name, ProjectId) VALUES (@Id, @Name, @ProjectId);
-    ";
-
-            using var connection = CreateConnection();
-            connection.Open();
-            using var transaction = connection.BeginTransaction();
-            try
-            {
-                foreach (var phase in phases)
-                {
-                    await connection.ExecuteAsync(query, phase, transaction);
-                }
-                transaction.Commit();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                //all the phases or none
-                transaction.Rollback();
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-        }
-
-
     }
 }
